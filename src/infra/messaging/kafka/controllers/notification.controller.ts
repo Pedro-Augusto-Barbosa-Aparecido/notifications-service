@@ -1,0 +1,21 @@
+import { SendNotification } from "@application/useCases/send-notification";
+import { Controller } from "@nestjs/common";
+import { EventPattern, Payload } from "@nestjs/microservices";
+
+interface SendNotificationPayload {
+  content: string;
+  category: string;
+  recipientId: string;
+}
+
+@Controller()
+export class NotificationController {
+  constructor(private sendNotification: SendNotification) {}
+
+  @EventPattern("notifications.send-notification")
+  async handleSendNotification(@Payload() body: SendNotificationPayload) {
+    const { category, content, recipientId } = body;
+
+    await this.sendNotification.execute({ category, content, recipientId });
+  }
+}
